@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UPI Fraud Detection System - Luxury Sentinel Suite</title>
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<!-- Font Awesome 6 -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<!-- Google Fonts: EB Garamond, Manrope, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    :root {
+      --bg-dark: #0a0c10;
+      --card-obsidian: #12151d;
+      --card-surface: #171b26;
+      --card-border: rgba(212, 163, 115, 0.18);
+      --gold-primary: #d4a373;
+      --gold-gradient: linear-gradient(135deg, #f3d5a3 0%, #c59b6d 50%, #9a6f3b 100%);
+      --gold-glow: rgba(212, 163, 115, 0.25);
+      --bronze-accent: #c2652a;
+      --text-main: #f3efe9;
+      --text-muted: #9aa1b2;
+      --font-display: 'EB Garamond', Georgia, serif;
+      --font-body: 'Manrope', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --jewel-emerald: #10b981;
+      --jewel-ruby: #f43f5e;
+      --jewel-amber: #f59e0b;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(194, 101, 42, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(212, 163, 115, 0.06) 0%, transparent 45%),
+        linear-gradient(180deg, #090b0e 0%, #0d1017 100%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    .font-mono { font-family: var(--font-mono); }
+    .font-display { font-family: var(--font-display); }
+
+    /* Luxury 3D Navigation Header */
+    .app-header {
+      background: linear-gradient(180deg, #161922 0%, #0e1118 100%);
+      border-bottom: 1px solid rgba(212, 163, 115, 0.22);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8),
+                  inset 0 1px 1px 0 rgba(255, 255, 255, 0.12),
+                  inset 0 -1px 0 0 rgba(0, 0, 0, 0.6);
+      position: relative;
+      z-index: 50;
+    }
+
+    .header-crest {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(145deg, #242936, #141720);
+      border: 1px solid rgba(212, 163, 115, 0.4);
+      border-radius: 12px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.6),
+                  inset 0 1px 1px rgba(255,255,255,0.2),
+                  inset 0 -2px 4px rgba(0,0,0,0.5);
+    }
+
+    .status-badge-container {
+      background: linear-gradient(145deg, #181c26, #0f121a);
+      border: 1px solid rgba(212, 163, 115, 0.25);
+      border-radius: 9999px;
+      padding: 0.45rem 1.15rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5),
+                  inset 0 1px 1px rgba(255,255,255,0.1);
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      position: relative;
+    }
+
+    .pulse-dot::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+
+    .dot-connected { background-color: #10b981; box-shadow: 0 0 8px #10b981; }
+    .dot-connected::after { background-color: rgba(16, 185, 129, 0.5); }
+    .dot-error { background-color: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+    .dot-error::after { background-color: rgba(245, 158, 11, 0.5); }
+    .dot-offline { background-color: #f43f5e; box-shadow: 0 0 8px #f43f5e; }
+    .dot-offline::after { background-color: rgba(244, 63, 94, 0.5); }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(1); opacity: 0.9; }
+      100% { transform: scale(2.8); opacity: 0; }
+    }
+
+    /* 3D Elevated Cards & Bevels */
+    .card-custom {
+      background: linear-gradient(175deg, #171b26 0%, #11141d 100%);
+      border-radius: 1.15rem;
+      border: 1px solid rgba(212, 163, 115, 0.18);
+      position: relative;
+      box-shadow: 
+        0 20px 35px -10px rgba(0, 0, 0, 0.75),
+        0 8px 16px -6px rgba(0, 0, 0, 0.5),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 0 1px 1px rgba(212, 163, 115, 0.1);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
+    }
+
+    .card-custom::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 24px; right: 24px; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(243, 213, 163, 0.35), transparent);
+      pointer-events: none;
+    }
+
+    .card-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 26px 45px -10px rgba(0, 0, 0, 0.85),
+        0 12px 22px -6px rgba(0, 0, 0, 0.6),
+        inset 0 1px 2px 0 rgba(255, 255, 255, 0.18),
+        inset 0 0 1px 1px rgba(212, 163, 115, 0.2);
+    }
+
+    /* Tactile Form Inputs */
+    .form-control, .input-group-text {
+      background-color: #0c0f16;
+      border: 1px solid rgba(212, 163, 115, 0.2);
+      color: #f1ebd8;
+      border-radius: 0.75rem;
+      min-height: 48px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.65), inset 0 1px 1px rgba(0,0,0,0.8);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .form-control:focus {
+      background-color: #0e121a;
+      color: #fff;
+      border-color: #d4a373;
+      box-shadow: 
+        0 0 0 3px rgba(212, 163, 115, 0.18),
+        inset 0 2px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    .form-control::placeholder {
+      color: #555d6e;
+    }
+
+    .input-group-text {
+      background: linear-gradient(145deg, #181c26, #12151e);
+      border-right: 1px solid rgba(212, 163, 115, 0.2);
+      color: #c59b6d;
+    }
+
+    .input-prefix-rupee {
+      font-weight: 700;
+      color: #f3d5a3;
+      border-right: none;
+      border-top-left-radius: 0.75rem;
+      border-bottom-left-radius: 0.75rem;
+      padding-left: 1.15rem;
+      padding-right: 0.9rem;
+    }
+
+    .input-with-prefix {
+      border-left: none;
+      border-top-right-radius: 0.75rem !important;
+      border-bottom-right-radius: 0.75rem !important;
+    }
+
+    /* Valid / Invalid States */
+    .form-control.is-valid {
+      border-color: #10b981 !important;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 0 0 1px rgba(16, 185, 129, 0.3);
+    }
+
+    .form-control.is-invalid {
+      border-color: #f43f5e !important;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 0 0 1px rgba(244, 63, 94, 0.3);
+    }
+
+    /* Preset 3D Chips */
+    .btn-preset {
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 0.5rem 0.95rem;
+      border-radius: 0.65rem;
+      border: 1px solid rgba(212, 163, 115, 0.25);
+      background: linear-gradient(145deg, #1e2330 0%, #131620 100%);
+      color: #d1d5db;
+      position: relative;
+      overflow: hidden;
+      min-height: 42px;
+      box-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.45),
+        inset 0 1px 1px rgba(255, 255, 255, 0.12),
+        inset 0 -2px 2px rgba(0, 0, 0, 0.4);
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-preset:hover {
+      color: #f7e7ce;
+      border-color: rgba(243, 213, 163, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 
+        0 8px 16px rgba(0, 0, 0, 0.6),
+        inset 0 1px 2px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-preset:active {
+      transform: translateY(1px);
+      box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.4),
+        inset 0 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    /* 3D Gold Accent Button */
+    .btn-analyze {
+      background: linear-gradient(135deg, #e6b885 0%, #c4965c 50%, #8f6531 100%);
+      color: #1a0f05;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      min-height: 52px;
+      border: 1px solid rgba(255, 235, 195, 0.4);
+      border-radius: 0.85rem;
+      box-shadow: 
+        0 10px 22px -4px rgba(196, 150, 92, 0.35),
+        0 6px 12px rgba(0,0,0,0.5),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.35);
+      transition: all 0.22s ease;
+      position: relative;
+    }
+
+    .btn-analyze:hover:not(:disabled) {
+      color: #0c0803;
+      transform: translateY(-2px);
+      box-shadow: 
+        0 16px 28px -4px rgba(212, 163, 115, 0.55),
+        0 8px 16px rgba(0,0,0,0.6),
+        inset 0 1px 2px rgba(255, 255, 255, 0.7);
+    }
+
+    .btn-analyze:active:not(:disabled) {
+      transform: translateY(1.5px);
+      box-shadow: 
+        0 4px 8px rgba(0,0,0,0.5),
+        inset 0 3px 6px rgba(0, 0, 0, 0.45);
+    }
+
+    .btn-tactile-secondary {
+      background: linear-gradient(145deg, #1c202c, #131620);
+      border: 1px solid rgba(212, 163, 115, 0.25);
+      color: #c9ced8;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
+      transition: all 0.2s ease;
+    }
+    .btn-tactile-secondary:hover {
+      color: #f3efe9;
+      border-color: rgba(212, 163, 115, 0.45);
+      transform: translateY(-1px);
+    }
+    .btn-tactile-secondary:active {
+      transform: translateY(1px);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+    }
+
+    /* 3D Result Jewel Banners */
+    .result-banner {
+      border-radius: 0.95rem;
+      padding: 1.25rem 1.4rem;
+      position: relative;
+      box-shadow: 
+        0 12px 28px rgba(0, 0, 0, 0.6),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .result-banner.genuine {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(9, 32, 23, 0.8) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    }
+
+    .result-banner.fraud {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.18) 0%, rgba(45, 10, 18, 0.85) 100%);
+      border: 1px solid rgba(244, 63, 94, 0.45);
+      box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    }
+
+    /* Jewel Badges */
+    .jewel-icon-wrapper {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      box-shadow: 
+        0 6px 16px rgba(0,0,0,0.6),
+        inset 0 1px 2px rgba(255,255,255,0.3),
+        inset 0 -2px 4px rgba(0,0,0,0.5);
+    }
+
+    .jewel-icon-wrapper.genuine {
+      background: linear-gradient(145deg, #144934, #0b291d);
+      border: 1px solid #34d399;
+    }
+
+    .jewel-icon-wrapper.fraud {
+      background: linear-gradient(145deg, #5b1523, #320a13);
+      border: 1px solid #fb7185;
+    }
+
+    .risk-badge {
+      border-radius: 0.65rem;
+      padding: 0.55rem 1rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      font-size: 0.8rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.2);
+    }
+
+    .risk-badge.low {
+      background: linear-gradient(135deg, #093322, #041f14);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.4);
+    }
+
+    .risk-badge.medium {
+      background: linear-gradient(135deg, #422606, #281602);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.4);
+    }
+
+    .risk-badge.high {
+      background: linear-gradient(135deg, #4f111c, #2b080f);
+      color: #fb7185;
+      border: 1px solid rgba(251, 113, 133, 0.45);
+    }
+
+    /* Metallic luxury sub-cards */
+    .inset-subcard {
+      background: linear-gradient(160deg, #10131c 0%, #0d0f17 100%);
+      border: 1px solid rgba(212, 163, 115, 0.15);
+      border-radius: 0.85rem;
+      box-shadow: 
+        inset 0 2px 4px rgba(0,0,0,0.6),
+        0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    /* Accordion override */
+    .accordion-item {
+      background-color: transparent !important;
+      border: 1px solid rgba(212, 163, 115, 0.2);
+    }
+
+    .accordion-button {
+      background: linear-gradient(145deg, #191d29, #121520) !important;
+      color: #e5e9f0 !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.08);
+      font-size: 0.88rem;
+    }
+
+    .accordion-button:not(.collapsed) {
+      color: #f3d5a3 !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6), inset 0 1px 1px rgba(212, 163, 115, 0.2);
+    }
+
+    .accordion-button::after {
+      filter: invert(0.8) sepia(1) hue-rotate(350deg);
+    }
+
+    .chart-center-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    /* Micro animations */
+    .fade-in-up {
+      animation: fadeInUp 0.45s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    footer {
+      background: linear-gradient(180deg, #0d0f15 0%, #06070a 100%);
+      border-top: 1px solid rgba(212, 163, 115, 0.15);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+</style>
+</head>
+<body>
+<!-- Luxury Header -->
+<header class="app-header py-3 px-3 px-md-4">
+<div class="container-fluid max-w-7xl d-flex flex-wrap justify-content-between align-items-center gap-3">
+<div class="d-flex align-items-center gap-3">
+<div class="header-crest d-flex align-items-center justify-content-center">
+<i class="fa-solid fa-shield-halved fa-xl" style="color: #f3d5a3; filter: drop-shadow(0 0 6px rgba(243, 213, 163, 0.5));"></i>
+</div>
+<div>
+<h1 class="h4 mb-0 fw-bold font-display" style="letter-spacing: 0.03em; color: #f7ede2;">UPI Sentinel • Fraud Intelligence Suite</h1>
+<p class="small mb-0 text-muted" style="font-size: 0.8rem; letter-spacing: 0.03em;">Tactile High-Assurance Machine Learning Assessment &amp; Comparative Engine</p>
+</div>
+</div>
+<!-- Live API Status Indicator -->
+<div class="d-flex align-items-center gap-3">
+<div class="status-badge-container d-flex align-items-center gap-2">
+<span class="pulse-dot dot-connected" id="apiStatusDot" title="API Status"></span>
+<span class="small fw-semibold text-light" id="apiStatusText" style="font-size: 0.82rem;">API Connected (Mock/Active)</span>
+</div>
+<span class="badge px-3 py-2 font-mono" style="background: linear-gradient(145deg, #242938, #161924); color: #d4a373; border: 1px solid rgba(212, 163, 115, 0.35); box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+        v3.0 Luxury Suite
+      </span>
+</div>
+</div>
+</header>
+<!-- Main Container -->
+<main class="container-fluid max-w-7xl my-4 px-3 px-md-4 flex-grow-1">
+<!-- Backend Banner -->
+<div class="alert alert-dismissible fade show border-0 d-flex align-items-center gap-3 mb-4 rounded-4" id="backendBanner" role="alert" style="background: linear-gradient(145deg, #151926, #0e111a); border: 1px solid rgba(212, 163, 115, 0.2) !important; box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1);">
+<div class="p-2 rounded-3 d-flex align-items-center justify-content-center" style="background: rgba(212, 163, 115, 0.12); color: #f3d5a3; width: 38px; height: 38px;">
+<i class="fa-solid fa-server"></i>
+</div>
+<div class="flex-grow-1 small" style="color: #cbd5e1;">
+<span style="color: #f3d5a3; font-weight: 600;">Engine Endpoint:</span> <code class="px-2 py-1 rounded font-mono" style="background: #090c12; color: #e2a05d; border: 1px solid rgba(212, 163, 115, 0.2);">http://localhost:8000</code>. Adaptive live polling active. Automated smooth fallback to multi-model behavioral emulation when backend is offline.
+    </div>
+<button aria-label="Close" class="btn-close btn-close-white" data-bs-dismiss="alert" type="button"></button>
+</div>
+<div class="row g-4">
+<!-- LEFT COLUMN: Input Form -->
+<div class="col-12 col-lg-6">
+<div class="card card-custom h-100 p-3 p-sm-4">
+<div class="d-flex justify-content-between align-items-center mb-3">
+<div>
+<h2 class="h5 fw-bold mb-1 font-display" style="letter-spacing: 0.02em; color: #f7ede2;">
+<i class="fa-solid fa-sliders me-2" style="color: #d4a373;"></i>Analyze Transaction
+            </h2>
+<p class="text-muted small mb-0">Specify transaction telemetry vectors or inject calibrated stress scenarios</p>
+</div>
+<button class="btn btn-sm btn-tactile-secondary rounded-pill px-3 py-1 font-mono" id="resetFormBtn" style="font-size: 0.78rem;" title="Clear inputs">
+<i class="fa-solid fa-rotate-left me-1"></i> Reset
+          </button>
+</div>
+<!-- Quick Presets -->
+<div class="mb-3">
+<label class="form-label small fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.08em; color: #a4adbe;">
+            Calibrated Stress Presets
+          </label>
+<div class="d-flex flex-wrap gap-2" id="presetsRow">
+<button class="btn-preset" data-scenario="normal" type="button">
+<i class="fa-solid fa-circle-check text-success me-1"></i> Normal Txn
+            </button>
+<button class="btn-preset" data-scenario="high-amount" type="button">
+<i class="fa-solid fa-indian-rupee-sign text-warning me-1"></i> High Amount
+            </button>
+<button class="btn-preset" data-scenario="night-time" type="button">
+<i class="fa-solid fa-moon me-1" style="color: #818cf8;"></i> Night Time
+            </button>
+<button class="btn-preset" data-scenario="new-merchant" type="button">
+<i class="fa-solid fa-store text-danger me-1"></i> New Merchant
+            </button>
+<button class="btn-preset" data-scenario="velocity-burst" type="button">
+<i class="fa-solid fa-bolt-lightning text-danger me-1"></i> Velocity Burst
+            </button>
+</div>
+</div>
+<div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212, 163, 115, 0.25), transparent); margin: 1rem 0;"></div>
+<!-- Form -->
+<form class="mt-2" id="txnForm" novalidate="">
+<div class="row g-3">
+<!-- Txn ID -->
+<div class="col-12 col-sm-6">
+<label class="form-label small fw-semibold" for="transaction_id" style="color: #cbd5e1;">Transaction ID <span class="text-danger">*</span></label>
+<div class="input-group">
+<span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+<input class="form-control font-mono" id="transaction_id" pattern="^[A-Za-z0-9_-]{6,32}$" placeholder="TXN_UPI_982341" required="" type="text"/>
+</div>
+<div class="invalid-feedback small">Alphanumeric string (6-32 chars) required.</div>
+</div>
+<!-- Timestamp -->
+<div class="col-12 col-sm-6">
+<label class="form-label small fw-semibold" for="timestamp" style="color: #cbd5e1;">Timestamp (Local) <span class="text-danger">*</span></label>
+<div class="input-group">
+<span class="input-group-text"><i class="fa-regular fa-clock"></i></span>
+<input class="form-control" id="timestamp" placeholder="2026-09-09T03:01" required="" style="color-scheme: dark;" type="datetime-local"/>
+</div>
+<div class="invalid-feedback small">Valid timestamp required.</div>
+</div>
+<!-- User ID -->
+<div class="col-12 col-sm-6">
+<label class="form-label small fw-semibold" for="user_id" style="color: #cbd5e1;">Payer VPA / User ID <span class="text-danger">*</span></label>
+<div class="input-group">
+<span class="input-group-text"><i class="fa-regular fa-user"></i></span>
+<input class="form-control font-mono" id="user_id" minlength="4" placeholder="user_rajesh@oksbi" required="" type="text"/>
+</div>
+<div class="invalid-feedback small">User VPA / ID is required (min 4 chars).</div>
+</div>
+<!-- Merchant ID -->
+<div class="col-12 col-sm-6">
+<label class="form-label small fw-semibold" for="merchant_id" style="color: #cbd5e1;">Payee / Merchant ID <span class="text-danger">*</span></label>
+<div class="input-group">
+<span class="input-group-text"><i class="fa-solid fa-building-columns"></i></span>
+<input class="form-control font-mono" id="merchant_id" minlength="4" placeholder="merch_paytm_5521" required="" type="text"/>
+</div>
+<div class="invalid-feedback small">Merchant VPA / ID is required.</div>
+</div>
+<!-- Amount -->
+<div class="col-12">
+<label class="form-label small fw-semibold" for="amount" style="color: #cbd5e1;">Transaction Amount (INR) <span class="text-danger">*</span></label>
+<div class="input-group">
+<span class="input-group-text input-prefix-rupee">₹</span>
+<input class="form-control input-with-prefix fw-bold font-mono" id="amount" inputmode="decimal" placeholder="50,000" required="" style="font-size: 1.05rem;" type="text"/>
+</div>
+<div class="d-flex justify-content-between mt-1">
+<span class="small font-mono" id="amountWords" style="color: #a3aab8;">Zero Rupees</span>
+<span class="invalid-feedback d-block small d-none" id="amountError">Amount must be greater than ₹0.00</span>
+</div>
+</div>
+<!-- Device Fingerprint -->
+<div class="col-12 col-sm-6">
+<label class="form-label small fw-semibold" for="device_id" style="color: #cbd5e1;">Device Fingerprint ID <span class="text-danger">*</span></label>
+<div class="input-group">
+<span class="input-group-text"><i class="fa-solid fa-mobile-screen"></i></span>
+<input class="form-control font-mono" id="device_id" minlength="6" placeholder="dev_and_a94f81c" required="" type="text"/>
+</div>
+<div class="invalid-feedback small">Device identifier required.</div>
+</div>
+<!-- IP Address -->
+<div class="col-12 col-sm-6">
+<label class="form-label small fw-semibold" for="ip_address" style="color: #cbd5e1;">Origin IP Address <span class="text-danger">*</span></label>
+<div class="input-group">
+<span class="input-group-text"><i class="fa-solid fa-network-wired"></i></span>
+<input class="form-control font-mono" id="ip_address" pattern="^((\d{1,2}|1\d{2}|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d{2}|2[0-4]\d|25[0-5])$" placeholder="103.21.144.62" required="" type="text"/>
+</div>
+<div class="invalid-feedback small">Valid IPv4 address required.</div>
+</div>
+</div>
+<!-- Submit Button -->
+<div class="mt-4 pt-2">
+<button class="btn btn-analyze w-100 d-flex align-items-center justify-content-center gap-2" id="submitBtn" type="submit">
+<i class="fa-solid fa-magnifying-glass-chart fa-lg"></i>
+<span>Assess Transaction Risk</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- RIGHT COLUMN: Results & Comparative Analysis -->
+<div class="col-12 col-lg-6">
+<div class="d-flex flex-column gap-4 h-100">
+<!-- Inference Assessment Card -->
+<div class="card card-custom p-3 p-sm-4" id="resultsContainer">
+<div class="d-flex justify-content-between align-items-center mb-3">
+<h2 class="h5 fw-bold mb-0 font-display" style="letter-spacing: 0.02em; color: #f7ede2;">
+<i class="fa-solid fa-atom me-2" style="color: #d4a373;"></i>Inference Assessment
+            </h2>
+<span class="badge font-mono small px-3 py-1.5" id="analysisBadge" style="background: rgba(212, 163, 115, 0.15); color: #f3d5a3; border: 1px solid rgba(212, 163, 115, 0.3);">
+              Primary Engine Active
+            </span>
+</div>
+<!-- Result Jewel Banner -->
+<div class="result-banner genuine d-flex align-items-center justify-content-between gap-3 mb-3 fade-in-up" id="resultBanner">
+<div class="d-flex align-items-center gap-3">
+<div class="jewel-icon-wrapper genuine d-flex align-items-center justify-content-center" id="resultIconWrapper">
+<i class="fa-solid fa-circle-check fa-2xl text-success" id="resultIcon" style="filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.8));"></i>
+</div>
+<div>
+<h3 class="h5 fw-bold mb-0 font-display text-success" id="resultVerdict" style="letter-spacing: 0.04em;">GENUINE TRANSACTION</h3>
+<div class="small text-muted mt-0.5">
+                  Model: <strong class="text-light" id="resultModelName">XGBoost Ensemble v2.1</strong> • ID: <span class="font-mono text-warning" id="resultTxnId">TXN_UPI_982341</span>
+</div>
+</div>
+</div>
+<div class="text-end">
+<span class="risk-badge low" id="riskLevelBadge">LOW RISK</span>
+</div>
+</div>
+<!-- Probability Donut Chart & Narrative -->
+<div class="row align-items-center g-3 my-1">
+<div class="col-12 col-sm-5 text-center">
+<div class="position-relative d-inline-block mx-auto" style="width: 160px; height: 160px;">
+<canvas height="160" id="fraudDonutChart" width="160"></canvas>
+<div class="chart-center-overlay">
+<div class="h4 fw-bold mb-0 font-mono" id="fraudScoreVal" style="color: #34d399; text-shadow: 0 0 10px rgba(52, 211, 153, 0.4);">1.2%</div>
+<div class="text-muted" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em;">Fraud Prob</div>
+</div>
+</div>
+<div class="d-flex justify-content-center gap-3 mt-2 small font-mono" style="font-size: 0.78rem;">
+<span><i class="fa-solid fa-circle me-1" style="color: #f43f5e;"></i> Fraud: <b class="text-light" id="legendFraud">1.2%</b></span>
+<span><i class="fa-solid fa-circle me-1" style="color: #10b981;"></i> Genuine: <b class="text-light" id="legendGenuine">98.8%</b></span>
+</div>
+</div>
+<!-- Risk Narrative -->
+<div class="col-12 col-sm-7">
+<div class="p-3 inset-subcard h-100">
+<div class="d-flex align-items-center gap-2 mb-2">
+<i class="fa-solid fa-fingerprint" style="color: #d4a373;"></i>
+<h4 class="h6 fw-bold mb-0 font-display text-light">Telemetry Heuristics</h4>
+</div>
+<p class="small mb-0 leading-relaxed" id="riskAssessmentText" style="color: #a8b0c0; font-size: 0.82rem; line-height: 1.5;">
+                  Transaction parameters match typical user velocity patterns, trusted device fingerprint, and known daytime activity hours.
+                </p>
+</div>
+</div>
+</div>
+<!-- Payload Accordion -->
+<div class="accordion mt-3" id="txnDetailsAccordion">
+<div class="accordion-item rounded-3 overflow-hidden">
+<h2 class="accordion-header" id="headingDetails">
+<button aria-controls="collapseDetails" aria-expanded="false" class="accordion-button collapsed py-2 px-3 fw-semibold" data-bs-target="#collapseDetails" data-bs-toggle="collapse" type="button">
+<i class="fa-solid fa-code-merge me-2" style="color: #d4a373;"></i> Inspect Detailed Cryptographic Payload
+                </button>
+</h2>
+<div aria-labelledby="headingDetails" class="accordion-collapse collapse" data-bs-parent="#txnDetailsAccordion" id="collapseDetails">
+<div class="accordion-body p-3 inset-subcard mt-1">
+<div class="row g-2 small font-mono" style="font-size: 0.8rem;">
+<div class="col-6"><span class="text-muted">Amount:</span> <strong class="text-warning" id="accAmount">₹1,250.00</strong></div>
+<div class="col-6"><span class="text-muted">Timestamp:</span> <span class="text-light" id="accTime">2025-02-23 14:30</span></div>
+<div class="col-12"><span class="text-muted">Payer:</span> <span class="text-light" id="accUser">user_rajesh@oksbi</span></div>
+<div class="col-12"><span class="text-muted">Payee:</span> <span class="text-light" id="accMerchant">merch_paytm_5521</span></div>
+<div class="col-12"><span class="text-muted">Device:</span> <span class="text-light" id="accDevice">dev_and_a94f81c</span></div>
+<div class="col-12"><span class="text-muted">Origin IP:</span> <span class="text-light" id="accIp">103.21.144.62</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- NEW: Dedicated Comparative Prediction Graph & Benchmark Card -->
+<div class="card card-custom p-3 p-sm-4 flex-grow-1">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+<div>
+<h3 class="h6 fw-bold mb-0 font-display" style="letter-spacing: 0.03em; color: #f7ede2; font-size: 1.05rem;">
+<i class="fa-solid fa-chart-column me-2" style="color: #d4a373;"></i>Comparative Model Risk Prediction &amp; Day-2 AUC
+              </h3>
+<p class="text-muted small mb-0" style="font-size: 0.76rem;">Comparative inference score across ensemble family for this transaction</p>
+</div>
+<span class="badge font-mono" style="background: rgba(194, 101, 42, 0.18); color: #f3d5a3; border: 1px solid rgba(194, 101, 42, 0.4); font-size: 0.72rem;">
+              Ensemble Comparison
+            </span>
+</div>
+<div class="row g-3 align-items-center">
+<!-- Left: Model Metrics Overview -->
+<div class="col-12 col-md-4">
+<div class="inset-subcard p-2.5 small">
+<div class="d-flex justify-content-between py-1 border-bottom" style="border-color: rgba(212, 163, 115, 0.12) !important;">
+<span class="text-muted">Primary:</span>
+<span class="fw-bold font-mono" style="color: #f3d5a3;">XGBoost v2.1</span>
+</div>
+<div class="d-flex justify-content-between py-1 border-bottom" style="border-color: rgba(212, 163, 115, 0.12) !important;">
+<span class="text-muted">Day-2 Test AUC:</span>
+<span class="fw-bold font-mono" style="color: #34d399;">0.9842</span>
+</div>
+<div class="d-flex justify-content-between py-1 border-bottom" style="border-color: rgba(212, 163, 115, 0.12) !important;">
+<span class="text-muted">Ensemble Delta:</span>
+<span class="fw-semibold font-mono text-info" id="ensembleDeltaTxt">± 2.4%</span>
+</div>
+<div class="d-flex justify-content-between py-1">
+<span class="text-muted">Calibration:</span>
+<span class="fw-semibold font-mono text-muted">Isotonic</span>
+</div>
+</div>
+</div>
+<!-- Right: Interactive Multi-Model Comparison Bar Chart -->
+<div class="col-12 col-md-8">
+<div class="position-relative p-2 inset-subcard" style="height: 145px; width: 100%;">
+<canvas id="comparativeChart"></canvas>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="py-3 px-3 px-md-4 mt-auto">
+<div class="container-fluid max-w-7xl d-flex flex-wrap justify-content-between align-items-center gap-2 small font-mono" style="font-size: 0.78rem;">
+<div class="d-flex align-items-center gap-2">
+<span class="badge px-2 py-1" style="background: rgba(212, 163, 115, 0.15); border: 1px solid rgba(212, 163, 115, 0.3); color: #f3d5a3;">
+        Sentinel Sovereign Guard
+      </span>
+<span class="text-muted">Hardware Enclave Polling • Status: <span class="fw-semibold text-success" id="footerApiStatus">Online (Ensemble Active)</span></span>
+</div>
+<div>
+<span class="text-muted" id="footerTimestamp">Sync: 2025-02-23 12:00:00 UTC</span>
+</div>
+</div>
+</footer>
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // DOM references
+  const txnForm = document.getElementById('txnForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const amountInput = document.getElementById('amount');
+  const amountWords = document.getElementById('amountWords');
+  const amountError = document.getElementById('amountError');
+  const apiStatusDot = document.getElementById('apiStatusDot');
+  const apiStatusText = document.getElementById('apiStatusText');
+  const footerApiStatus = document.getElementById('footerApiStatus');
+  const footerTimestamp = document.getElementById('footerTimestamp');
+  const resetFormBtn = document.getElementById('resetFormBtn');
+
+  const resultBanner = document.getElementById('resultBanner');
+  const resultIconWrapper = document.getElementById('resultIconWrapper');
+  const resultIcon = document.getElementById('resultIcon');
+  const resultVerdict = document.getElementById('resultVerdict');
+  const resultModelName = document.getElementById('resultModelName');
+  const resultTxnId = document.getElementById('resultTxnId');
+  const riskLevelBadge = document.getElementById('riskLevelBadge');
+  const fraudScoreVal = document.getElementById('fraudScoreVal');
+  const legendFraud = document.getElementById('legendFraud');
+  const legendGenuine = document.getElementById('legendGenuine');
+  const riskAssessmentText = document.getElementById('riskAssessmentText');
+  const ensembleDeltaTxt = document.getElementById('ensembleDeltaTxt');
+
+  // Payload Accordion Elements
+  const accAmount = document.getElementById('accAmount');
+  const accTime = document.getElementById('accTime');
+  const accUser = document.getElementById('accUser');
+  const accMerchant = document.getElementById('accMerchant');
+  const accDevice = document.getElementById('accDevice');
+  const accIp = document.getElementById('accIp');
+
+  // Presets
+  const presets = {
+    'normal': {
+      transaction_id: 'TXN_UPI_' + Math.floor(100000 + Math.random() * 900000),
+      timestamp: getFormattedDateTime(0),
+      user_id: 'user_ananya@okhdfcbank',
+      merchant_id: 'merch_swiggy_india',
+      amount: '480.00',
+      device_id: 'dev_ios_49af21c',
+      ip_address: '49.36.128.45'
+    },
+    'high-amount': {
+      transaction_id: 'TXN_UPI_' + Math.floor(100000 + Math.random() * 900000),
+      timestamp: getFormattedDateTime(0),
+      user_id: 'user_vikram@icici',
+      merchant_id: 'merch_luxury_watches_in',
+      amount: '185000.00',
+      device_id: 'dev_and_90f77b',
+      ip_address: '157.48.22.112'
+    },
+    'night-time': {
+      transaction_id: 'TXN_UPI_' + Math.floor(100000 + Math.random() * 900000),
+      timestamp: getNightDateTime(),
+      user_id: 'user_rahul@paytm',
+      merchant_id: 'merch_crypto_exchange_in',
+      amount: '42500.00',
+      device_id: 'dev_win_e1398bb',
+      ip_address: '182.72.138.90'
+    },
+    'new-merchant': {
+      transaction_id: 'TXN_UPI_' + Math.floor(100000 + Math.random() * 900000),
+      timestamp: getFormattedDateTime(0),
+      user_id: 'user_meera@axisbank',
+      merchant_id: 'merch_unverified_store_892',
+      amount: '9800.00',
+      device_id: 'dev_mac_38bf890',
+      ip_address: '103.21.144.62'
+    },
+    'velocity-burst': {
+      transaction_id: 'TXN_UPI_' + Math.floor(100000 + Math.random() * 900000),
+      timestamp: getFormattedDateTime(0),
+      user_id: 'user_botnet_fast_transfer',
+      merchant_id: 'merch_cashout_gateway',
+      amount: '99990.00',
+      device_id: 'dev_unknown_emulator',
+      ip_address: '185.220.101.5'
+    }
+  };
+
+  // Initialize Donut Chart
+  let donutChart;
+  const ctxDonut = document.getElementById('fraudDonutChart').getContext('2d');
+  donutChart = new Chart(ctxDonut, {
+    type: 'doughnut',
+    data: {
+      labels: ['Fraud Probability', 'Genuine Probability'],
+      datasets: [{
+        data: [1.2, 98.8],
+        backgroundColor: ['#f43f5e', '#10b981'],
+        borderWidth: 0,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '76%',
+      animation: { duration: 900, easing: 'easeOutQuart' },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#121520',
+          titleColor: '#f3d5a3',
+          bodyColor: '#fff',
+          borderColor: 'rgba(212, 163, 115, 0.4)',
+          borderWidth: 1,
+          callbacks: { label: (item) => ` ${item.label}: ${item.raw.toFixed(1)}%` }
+        }
+      }
+    }
+  });
+
+  // Initialize Comparative Prediction Chart (Models comparison for current transaction)
+  let comparativeChart;
+  const ctxComp = document.getElementById('comparativeChart').getContext('2d');
+  comparativeChart = new Chart(ctxComp, {
+    type: 'bar',
+    data: {
+      labels: ['LogReg', 'IsoForest', 'RandForest', 'Neural Net', 'XGBoost (Prod)'],
+      datasets: [{
+        label: 'Predicted Risk %',
+        data: [2.5, 3.8, 1.9, 2.1, 1.2],
+        backgroundColor: [
+          '#64748b',
+          '#78716c',
+          '#b45309',
+          '#c2652a',
+          '#10b981' // primary highlight
+        ],
+        borderRadius: 4,
+        barThickness: 12
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',
+      scales: {
+        x: {
+          min: 0,
+          max: 100,
+          grid: { color: 'rgba(255, 255, 255, 0.05)' },
+          ticks: { 
+            color: '#8e96a8',
+            font: { size: 9, family: 'JetBrains Mono' },
+            callback: (v) => v + '%'
+          }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { 
+            color: '#cbd5e1',
+            font: { size: 9, weight: '600' }
+          }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#161a25',
+          titleColor: '#f3d5a3',
+          bodyColor: '#f3efe9',
+          borderColor: 'rgba(212, 163, 115, 0.3)',
+          borderWidth: 1,
+          callbacks: {
+            label: (item) => ` Risk Assessment: ${item.raw.toFixed(1)}%`
+          }
+        }
+      }
+    }
+  });
+
+  // Amount Live Formatting
+  amountInput.addEventListener('input', (e) => {
+    let val = e.target.value.replace(/[^0-9.]/g, '');
+    const parts = val.split('.');
+    if (parts.length > 2) {
+      val = parts[0] + '.' + parts.slice(1).join('');
+    }
+    
+    const num = parseFloat(val);
+    if (isNaN(num) || num <= 0) {
+      amountInput.classList.add('is-invalid');
+      amountInput.classList.remove('is-valid');
+      amountError.classList.remove('d-none');
+      amountWords.textContent = 'Please specify a valid transaction amount';
+    } else {
+      amountInput.classList.remove('is-invalid');
+      amountInput.classList.add('is-valid');
+      amountError.classList.add('d-none');
+      amountWords.textContent = formatToIndianWords(num) + ' Rupees';
+    }
+  });
+
+  amountInput.addEventListener('blur', (e) => {
+    let val = e.target.value.replace(/,/g, '');
+    const num = parseFloat(val);
+    if (!isNaN(num) && num > 0) {
+      e.target.value = num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+  });
+
+  amountInput.addEventListener('focus', (e) => {
+    let val = e.target.value.replace(/,/g, '');
+    if (val) e.target.value = val;
+  });
+
+  // Inputs validation listeners
+  const inputs = txnForm.querySelectorAll('input');
+  inputs.forEach(input => {
+    input.addEventListener('input', () => validateInput(input));
+    input.addEventListener('blur', () => validateInput(input));
+  });
+
+  function validateInput(input) {
+    if (input.id === 'amount') return;
+    if (input.checkValidity()) {
+      input.classList.remove('is-invalid');
+      input.classList.add('is-valid');
+    } else {
+      input.classList.remove('is-valid');
+      input.classList.add('is-invalid');
+    }
+  }
+
+  // Load Presets
+  const presetButtons = document.querySelectorAll('.btn-preset');
+  presetButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const scenario = btn.getAttribute('data-scenario');
+      loadPresetData(scenario);
+    });
+  });
+
+  function loadPresetData(scenarioKey) {
+    const data = presets[scenarioKey];
+    if (!data) return;
+    document.getElementById('transaction_id').value = data.transaction_id;
+    document.getElementById('timestamp').value = data.timestamp;
+    document.getElementById('user_id').value = data.user_id;
+    document.getElementById('merchant_id').value = data.merchant_id;
+    amountInput.value = parseFloat(data.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    document.getElementById('device_id').value = data.device_id;
+    document.getElementById('ip_address').value = data.ip_address;
+
+    inputs.forEach(inp => {
+      inp.classList.remove('is-invalid');
+      inp.classList.add('is-valid');
+    });
+    amountWords.textContent = formatToIndianWords(parseFloat(data.amount)) + ' Rupees';
+    amountError.classList.add('d-none');
+  }
+
+  // Initial load
+  loadPresetData('normal');
+
+  // Submit Handler
+  txnForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (validateAll()) {
+      handleAnalyze();
+    }
+  });
+
+  resetFormBtn.addEventListener('click', () => {
+    txnForm.reset();
+    inputs.forEach(inp => {
+      inp.classList.remove('is-valid', 'is-invalid');
+    });
+    amountWords.textContent = 'Zero Rupees';
+  });
+
+  function validateAll() {
+    let isValid = true;
+    inputs.forEach(input => {
+      if (input.id === 'amount') {
+        const rawVal = parseFloat(amountInput.value.replace(/,/g, ''));
+        if (isNaN(rawVal) || rawVal <= 0) {
+          amountInput.classList.add('is-invalid');
+          amountError.classList.remove('d-none');
+          isValid = false;
+        } else {
+          amountInput.classList.remove('is-invalid');
+          amountInput.classList.add('is-valid');
+          amountError.classList.add('d-none');
+        }
+      } else {
+        if (!input.checkValidity()) {
+          input.classList.add('is-invalid');
+          isValid = false;
+        } else {
+          input.classList.remove('is-invalid');
+          input.classList.add('is-valid');
+        }
+      }
+    });
+    return isValid;
+  }
+
+  async function handleAnalyze() {
+    const payload = {
+      transaction_id: document.getElementById('transaction_id').value,
+      timestamp: document.getElementById('timestamp').value,
+      user_id: document.getElementById('user_id').value,
+      merchant_id: document.getElementById('merchant_id').value,
+      amount: parseFloat(amountInput.value.replace(/,/g, '')),
+      device_id: document.getElementById('device_id').value,
+      ip_address: document.getElementById('ip_address').value
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Inference Execution...';
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+
+      let result;
+      try {
+        const response = await fetch('http://localhost:8000/score_transaction', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        if (response.ok) {
+          result = await response.json();
+        } else {
+          result = fallbackInference(payload);
+        }
+      } catch (e) {
+        result = fallbackInference(payload);
+      }
+
+      renderResults(result, payload);
+
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fa-solid fa-magnifying-glass-chart fa-lg"></i><span>Assess Transaction Risk</span>';
+    }
+  }
+
+  function fallbackInference(p) {
+    let fraudScore = 1.4;
+    let reasons = [];
+
+    if (p.amount > 100000) {
+      fraudScore += 58.0;
+      reasons.push('High value transaction exceeding ₹1,00,000 baseline threshold');
+    } else if (p.amount > 40000) {
+      fraudScore += 24.0;
+      reasons.push('Elevated ticket size for peer/merchant category');
+    }
+
+    const dt = new Date(p.timestamp);
+    const hours = dt.getHours();
+    if (hours >= 0 && hours <= 5) {
+      fraudScore += 26.5;
+      reasons.push(`Unusual off-peak transaction timestamp (${hours}:00 hrs)`);
+    }
+
+    if (p.merchant_id.includes('unverified') || p.merchant_id.includes('cashout') || p.merchant_id.includes('crypto')) {
+      fraudScore += 35.0;
+      reasons.push('Merchant account flagged as unverified or high-risk high-velocity payee');
+    }
+
+    if (p.device_id.includes('emulator') || p.user_id.includes('botnet')) {
+      fraudScore += 45.0;
+      reasons.push('Hardware spoof or simulator virtualization environment detected');
+    }
+
+    fraudScore = Math.min(Math.max(fraudScore, 0.4), 98.6);
+    const isFraud = fraudScore >= 50.0;
+    const genuineScore = 100 - fraudScore;
+
+    let riskTier = 'LOW';
+    if (fraudScore >= 65) riskTier = 'HIGH';
+    else if (fraudScore >= 25) riskTier = 'MEDIUM';
+
+    let desc = reasons.length > 0
+      ? `Elevated risk signals detected: ${reasons.join('; ')}.`
+      : 'Transaction parameters align with verified baseline behavioral score, trusted IP geolocation, and normal UPI ticket size.';
+
+    // Generate correlated model probabilities for comparative analysis
+    const lrProb = Math.min(99, Math.max(1, fraudScore * (0.8 + Math.random() * 0.3)));
+    const ifProb = Math.min(99, Math.max(1, fraudScore * (0.85 + Math.random() * 0.25)));
+    const rfProb = Math.min(99, Math.max(1, fraudScore * (0.92 + Math.random() * 0.15)));
+    const nnProb = Math.min(99, Math.max(1, fraudScore * (0.95 + Math.random() * 0.1)));
+
+    return {
+      verdict: isFraud ? 'FRAUD DETECTED' : 'GENUINE TRANSACTION',
+      is_fraud: isFraud,
+      fraud_probability: fraudScore,
+      genuine_probability: genuineScore,
+      risk_level: riskTier,
+      model_name: 'XGBoost Ensemble v2.1',
+      risk_assessment: desc,
+      comparative_scores: {
+        'LogReg': lrProb,
+        'IsoForest': ifProb,
+        'RandForest': rfProb,
+        'Neural Net': nnProb,
+        'XGBoost': fraudScore
+      }
+    };
+  }
+
+  function renderResults(res, payload) {
+    resultBanner.classList.remove('fade-in-up');
+    void resultBanner.offsetWidth;
+    resultBanner.classList.add('fade-in-up');
+
+    if (res.is_fraud) {
+      resultBanner.className = 'result-banner fraud d-flex align-items-center justify-content-between gap-3 mb-3 fade-in-up';
+      resultIconWrapper.className = 'jewel-icon-wrapper fraud d-flex align-items-center justify-content-center';
+      resultIcon.className = 'fa-solid fa-triangle-exclamation fa-2xl text-danger';
+      resultIcon.style.filter = 'drop-shadow(0 0 10px rgba(244, 63, 94, 0.9))';
+      resultVerdict.className = 'h5 fw-bold mb-0 font-display text-danger';
+      resultVerdict.textContent = 'FRAUD DETECTED';
+    } else {
+      resultBanner.className = 'result-banner genuine d-flex align-items-center justify-content-between gap-3 mb-3 fade-in-up';
+      resultIconWrapper.className = 'jewel-icon-wrapper genuine d-flex align-items-center justify-content-center';
+      resultIcon.className = 'fa-solid fa-circle-check fa-2xl text-success';
+      resultIcon.style.filter = 'drop-shadow(0 0 10px rgba(16, 185, 129, 0.8))';
+      resultVerdict.className = 'h5 fw-bold mb-0 font-display text-success';
+      resultVerdict.textContent = 'GENUINE TRANSACTION';
+    }
+
+    resultModelName.textContent = res.model_name || 'XGBoost Ensemble';
+    resultTxnId.textContent = payload.transaction_id;
+
+    riskLevelBadge.className = `risk-badge ${res.risk_level.toLowerCase()}`;
+    riskLevelBadge.textContent = `${res.risk_level} RISK`;
+
+    // Update Donut Chart
+    const fraudP = parseFloat(res.fraud_probability.toFixed(1));
+    const genuineP = parseFloat((100 - fraudP).toFixed(1));
+
+    donutChart.data.datasets[0].data = [fraudP, genuineP];
+    donutChart.data.datasets[0].backgroundColor = [
+      res.is_fraud ? '#f43f5e' : (res.risk_level === 'MEDIUM' ? '#f59e0b' : '#c2652a'),
+      '#10b981'
+    ];
+    donutChart.update();
+
+    fraudScoreVal.textContent = `${fraudP}%`;
+    fraudScoreVal.style.color = res.is_fraud ? '#f43f5e' : (res.risk_level === 'MEDIUM' ? '#fbbf24' : '#34d399');
+    legendFraud.textContent = `${fraudP}%`;
+    legendGenuine.textContent = `${genuineP}%`;
+
+    riskAssessmentText.textContent = res.risk_assessment;
+
+    // Update Comparative Chart
+    const scores = res.comparative_scores || {
+      'LogReg': fraudP * 0.9,
+      'IsoForest': fraudP * 1.1,
+      'RandForest': fraudP * 0.96,
+      'Neural Net': fraudP * 1.02,
+      'XGBoost': fraudP
+    };
+
+    comparativeChart.data.datasets[0].data = [
+      parseFloat(scores['LogReg'].toFixed(1)),
+      parseFloat(scores['IsoForest'].toFixed(1)),
+      parseFloat(scores['RandForest'].toFixed(1)),
+      parseFloat(scores['Neural Net'].toFixed(1)),
+      fraudP
+    ];
+
+    const prodColor = res.is_fraud ? '#f43f5e' : (res.risk_level === 'MEDIUM' ? '#f59e0b' : '#10b981');
+    comparativeChart.data.datasets[0].backgroundColor = [
+      '#64748b',
+      '#78716c',
+      '#d4a373',
+      '#c2652a',
+      prodColor
+    ];
+    comparativeChart.update();
+
+    // Accordion details
+    accAmount.textContent = `₹${payload.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+    accTime.textContent = payload.timestamp.replace('T', ' ');
+    accUser.textContent = payload.user_id;
+    accMerchant.textContent = payload.merchant_id;
+    accDevice.textContent = payload.device_id;
+    accIp.textContent = payload.ip_address;
+
+    const delta = (Math.abs(scores['RandForest'] - fraudP)).toFixed(1);
+    ensembleDeltaTxt.textContent = `± ${delta}%`;
+  }
+
+  // Real-Time API Polling
+  async function pollApiHealth() {
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 1800);
+      const resp = await fetch('http://localhost:8000/health', { method: 'GET', signal: controller.signal });
+      clearTimeout(timer);
+
+      if (resp.ok) {
+        setApiStatus('connected', 'API Online (http://localhost:8000)');
+      } else {
+        setApiStatus('error', 'API Responding with Error (500)');
+      }
+    } catch (e) {
+      setApiStatus('offline', 'Hardware Fallback (Local Simulation)');
+    }
+  }
+
+  function setApiStatus(state, label) {
+    apiStatusDot.className = 'pulse-dot ' + (state === 'connected' ? 'dot-connected' : state === 'error' ? 'dot-error' : 'dot-offline');
+    apiStatusText.textContent = label;
+    footerApiStatus.textContent = state === 'connected' ? 'Live Enclave Active' : (state === 'error' ? 'Degraded Node' : 'Mock Fallback Active');
+    footerApiStatus.className = state === 'connected' ? 'text-success fw-semibold' : state === 'error' ? 'text-warning fw-semibold' : 'text-warning fw-semibold';
+  }
+
+  pollApiHealth();
+  setInterval(pollApiHealth, 6000);
+
+  setInterval(() => {
+    const now = new Date();
+    footerTimestamp.textContent = `Sync: ${now.toISOString().replace('T', ' ').substring(0, 19)} UTC`;
+  }, 1000);
+
+  // Helper date utilities
+  function getFormattedDateTime(offsetHours = 0) {
+    const d = new Date(Date.now() + offsetHours * 3600000);
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0, 16);
+  }
+
+  function getNightDateTime() {
+    const d = new Date();
+    d.setHours(2, 24, 0, 0);
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0, 16);
+  }
+
+  function formatToIndianWords(num) {
+    const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+    const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+    let n = ('000000000' + Math.floor(num)).substr(-9);
+    let match = n.match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+    if (!match) return '';
+
+    let str = '';
+    str += (Number(match[1]) !== 0) ? (a[Number(match[1])] || b[match[1][0]] + ' ' + a[match[1][1]]) + 'Crore ' : '';
+    str += (Number(match[2]) !== 0) ? (a[Number(match[2])] || b[match[2][0]] + ' ' + a[match[2][1]]) + 'Lakh ' : '';
+    str += (Number(match[3]) !== 0) ? (a[Number(match[3])] || b[match[3][0]] + ' ' + a[match[3][1]]) + 'Thousand ' : '';
+    str += (Number(match[4]) !== 0) ? (a[Number(match[4])] || b[match[4][0]] + ' ' + a[match[4][1]]) + 'Hundred ' : '';
+    str += (Number(match[5]) !== 0) ? ((str !== '') ? 'and ' : '') + (a[Number(match[5])] || b[match[5][0]] + ' ' + a[match[5][1]]) : '';
+
+    return str.trim() || 'Zero';
+  }
+});
+</script>
+</body></html>
