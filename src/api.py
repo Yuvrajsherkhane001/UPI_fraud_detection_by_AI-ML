@@ -17,6 +17,56 @@ from typing import Dict, Any
 import uvicorn
 from feature_engineer import UPIFeatureEngineer
 
+# Add this AFTER imports, BEFORE app = FastAPI(...)
+  import os
+  import joblib
+  import json
+  import subprocess
+  import sys
+  from feature_engineer import UPIFeatureEngineer
+
+  # Global variables (same as before)
+  model = None
+  feature_engineer = None
+  feature_columns = None
+  model_metadata = None
+
+  # Load model at module level (runs once per container)
+  def initialize_model():
+      global model, feature_engineer, feature_columns, model_metadata
+
+      model_path = "models/best_fraud_model.pkl"
+
+      # If model doesn't exist, generate and train (same logic as before)
+      if not os.path.exists(model_path):
+          try:
+              subprocess.run([sys.executable, "src/data_generator.py"], check=True, timeout=300)
+              subprocess.run([sys.executable, "src/fraud_detector.py"], check=True, timeout=300)
+          except Exception as e:
+              print(f"[WARNING] Model training failed: {e}")
+
+      # Load components
+      try:
+          if os.path.exists(model_path):
+              model = joblib.load(model_path)
+
+          feature_path = "models/feature_columns.json"
+          if os.path.exists(feature_path):
+              with open(feature_path, 'r') as f:
+                  feature_columns = json.load(f)
+
+          metadata_path = "models/model_metadata.json"
+          if os.path.exists(metadata_path):
+              with open(metadata_path, 'r') as f:
+                  model_metadata = json.load(f)
+
+          feature_engineer = UPIFeatureEngineer()
+      except Exception as e:
+          print(f"[WARNING] Model loading failed: {e}")
+
+  # Initialize on module load
+  initialize_model()
+
 # Initialize FastAPI app
 app = FastAPI(
     title="UPI Fraud Detection API",
