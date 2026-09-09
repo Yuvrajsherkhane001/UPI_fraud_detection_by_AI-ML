@@ -11,6 +11,8 @@ import numpy as np
 import joblib
 import json
 import os
+import subprocess
+import sys
 from typing import Dict, Any
 import uvicorn
 from feature_engineer import UPIFeatureEngineer
@@ -52,11 +54,47 @@ async def load_model():
     """Load the trained model and feature engineering components on startup"""
     global model, feature_engineer, feature_columns, model_metadata
 
+    # Step 1: Check if model exists, if not generate and train
+    model_path = "models/best_fraud_model.pkl"
+    if not os.path.exists(model_path):
+        print("[INFO] Model file not found. Generating data and training model...")
+        try:
+            # Generate data
+            print("[INFO] Running data generation...")
+            result = subprocess.run([sys.executable, "src/data_generator.py"],
+                                  capture_output=True, text=True, timeout=300)
+            if result.returncode != 0:
+                print(f"[ERROR] Data generation failed: {result.stderr}")
+                raise RuntimeError("Data generation failed")
+            print("[INFO] Data generation completed.")
+        except subprocess.TimeoutExpired:
+            print("[ERROR] Data generation timed out")
+            raise RuntimeError("Data generation timed out")
+        except Exception as e:
+            print(f"[ERROR] Data generation failed: {e}")
+            raise RuntimeError(f"Data generation failed: {e}")
+
+        try:
+            # Train model
+            print("[INFO] Running model training...")
+            result = subprocess.run([sys.executable, "src/fraud_detector.py"],
+                                  capture_output=True, text=True, timeout=300)
+            if result.returncode != 0:
+                print(f"[ERROR] Model training failed: {result.stderr}")
+                raise RuntimeError("Model training failed")
+            print("[INFO] Model training completed.")
+        except subprocess.TimeoutExpired:
+            print("[ERROR] Model training timed out")
+            raise RuntimeError("Model training timed out")
+        except Exception as e:
+            print(f"[ERROR] Model training failed: {e}")
+            raise RuntimeError(f"Model training failed: {e}")
+
+    # Step 2: Load the model and related files (should exist now)
     try:
         # Load the best model
-        model_path = "models/best_fraud_model.pkl"
         if not os.path.exists(model_path):
-            raise FileNotFoundError(f"Model file not found: {model_path}")
+            raise FileNotFoundError(f"Model file not found after training: {model_path}")
 
         model = joblib.load(model_path)
         print(f"[OK] Model loaded from {model_path}")
@@ -80,15 +118,14 @@ async def load_model():
             model_metadata = {"best_model_name": "Unknown", "training_date": "Unknown"}
             print("[WARN] Model metadata not found")
 
-        # Initialize feature engineer (we'll fit it on-demand or load a pre-fitted one)
-        # For simplicity in this API, we'll create a fresh feature engineer
-        # In production, you'd want to save and load a pre-fitted feature engineer
+        # Initialize feature engineer
         feature_engineer = UPIFeatureEngineer()
         print("[OK] Feature engineer initialized")
 
     except Exception as e:
         print(f"[ERROR] Error loading model: {str(e)}")
         # Don't fail startup - allow health checks to work
+        # Model will remain None, health check will fail
         pass
 
 def preprocess_transaction(transaction: TransactionRequest) -> pd.DataFrame:
