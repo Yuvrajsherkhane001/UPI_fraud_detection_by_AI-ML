@@ -83,7 +83,7 @@ This will:
 ```bash
 python src/api.py
 ```
-<br>markdown\nWhen running locally, the API will be available at `http://localhost:8000`.\nWhen deployed to Render.com, the API will be available at your Render service URL (e.g., `https://your-service.onrender.com`).\n
+When running locally, the API will be available at `http://localhost:8000`.When deployed to Render.com, the API will be available at your Render service URL (e.g., `https://your-service.onrender.com`).
 
 ### 4. Test the API
 ```bash
