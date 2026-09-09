@@ -452,7 +452,7 @@
 <i class="fa-solid fa-server"></i>
 </div>
 <div class="flex-grow-1 small" style="color: #cbd5e1;">
-<span style="color: #f3d5a3; font-weight: 600;">Engine Endpoint:</span> <code class="px-2 py-1 rounded font-mono" style="background: #090c12; color: #e2a05d; border: 1px solid rgba(212, 163, 115, 0.2);">http://localhost:8000</code>. Adaptive live polling active. Automated smooth fallback to multi-model behavioral emulation when backend is offline.
+<span style="color: #f3d5a3; font-weight: 600;">Engine Endpoint:</span> <code class="px-2 py-1 rounded font-mono" style="background: #090c12; color: #e2a05d; border: 1px solid rgba(212, 163, 115, 0.2);">Adaptive live polling active. Automated smooth fallback to multi-model behavioral emulation when backend is offline.
     </div>
 <button aria-label="Close" class="btn-close btn-close-white" data-bs-dismiss="alert" type="button"></button>
 </div>
@@ -1044,7 +1044,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       let result;
       try {
-        const response = await fetch('http://localhost:8000/score_transaction', {
+        const response = await fetch('/score_transaction', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -1222,7 +1222,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 1800);
-      const resp = await fetch('http://localhost:8000/health', { method: 'GET', signal: controller.signal });
+      const resp = await fetch('/health', { method: 'GET', signal: controller.signal });
       clearTimeout(timer);
 
       if (resp.ok) {
